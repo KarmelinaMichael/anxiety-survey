@@ -40,7 +40,6 @@
   .card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:20px; margin-bottom:14px}
   h1{font-size:1.45rem; line-height:1.5; margin:0 0 6px}
   h2{font-size:1.12rem; margin:0 0 10px}
-  h3{font-size:.98rem; margin:22px 0 8px; color:var(--muted); font-weight:600}
   p{margin:0 0 12px}
   .sub{color:var(--muted); font-size:.92rem}
   .screen{display:none}
@@ -65,22 +64,9 @@
   .qtext{font-size:1.08rem; font-weight:600; margin:0 0 16px; line-height:1.7}
   .score{font-size:2.6rem; font-weight:700; line-height:1.2}
   .pill{display:inline-block; padding:4px 14px; border-radius:99px; font-size:.9rem; font-weight:600; color:#fff}
-  .row{display:flex; align-items:center; gap:10px; margin-bottom:8px; font-size:.92rem}
-  .row .lbl{flex:0 0 42%; color:var(--muted)}
-  .row .track{flex:1; height:16px; background:var(--line); border-radius:6px; overflow:hidden}
-  .row .track > i{display:block; height:100%; background:var(--accent); border-radius:6px}
-  .row .val{flex:0 0 auto; font-variant-numeric:tabular-nums; color:var(--muted); min-width:62px; text-align:left}
-  .stat{display:flex; gap:12px; flex-wrap:wrap; margin-bottom:6px}
-  .stat > div{flex:1 1 42%; background:var(--accent-soft); border-radius:12px; padding:12px 14px}
-  .stat b{display:block; font-size:1.5rem; line-height:1.3}
-  .qstat{border-top:1px solid var(--line); padding-top:14px; margin-top:14px}
-  .qstat:first-of-type{border-top:none; padding-top:0; margin-top:0}
-  .qstat .title{font-weight:600; margin-bottom:10px; font-size:.97rem}
   .note{background:var(--accent-soft); border-radius:12px; padding:14px 16px; font-size:.92rem; margin-top:14px}
   .warn{border:1px solid var(--lv4); border-radius:12px; padding:14px 16px; font-size:.92rem; margin-top:14px}
   .msg{font-size:.88rem; color:var(--muted); margin-top:10px}
-  ul{margin:0 0 12px; padding-inline-start:20px}
-  li{margin-bottom:6px}
   .ft{text-align:center; color:var(--muted); font-size:.82rem; margin-top:22px}
 </style>
 </head>
@@ -94,12 +80,11 @@
       <p class="sub">١٥ موقف من حياتك اليومية · من ٣ لـ ٥ دقايق</p>
       <p>اختار اللي بيوصفك <b>فعلاً</b> في آخر شهر، مش اللي نفسك تكون. مفيش إجابة صح وإجابة غلط.</p>
       <div class="note">
-        <b>الاستبيان مجهول تماماً.</b> مش هنطلب منك اسم ولا رقم، ومحدش هيشوف إجابتك لوحدها — الأرقام بتظهر مجمّعة بس.
+        <b>الاستبيان مجهول تماماً.</b> مش هنطلب منك اسم ولا رقم، ومحدش هيشوف إجابتك لوحدها — الأرقام بتتجمّع كلها مع بعض.
         <br><br>
         وده استبيان عشان تعرف نفسك أكتر، مش تشخيص طبي ولا بديل عن دكتور أو أخصائي نفسي.
       </div>
       <button class="btn" id="start">ابدأ الاستبيان</button>
-      <button class="btn ghost" id="toResults">اعرض النتايج المجمّعة</button>
     </div>
   </section>
 
@@ -125,27 +110,11 @@
       <div id="myWarn"></div>
       <div class="note" id="myTips"></div>
       <p class="msg" id="saveMsg"></p>
-      <button class="btn" id="showStats">اعرض النتايج المجمّعة</button>
-    </div>
-  </section>
-
-  <!-- الإحصائيات -->
-  <section id="results" class="screen">
-    <div class="card">
-      <h2>النتايج المجمّعة — لايف</h2>
-      <p class="sub" id="liveNote">بتتحدّث لوحدها أول ما حد جديد يجاوب.</p>
-      <div class="stat" id="topStats"></div>
-      <h3>توزيع مستويات القلق</h3>
-      <div id="levels"></div>
-      <h3>الخلاصة</h3>
-      <div id="conclusion"></div>
     </div>
     <div class="card">
-      <h2>تفصيل كل موقف</h2>
-      <p class="sub">عدد ونسبة اللي اختاروا كل إجابة.</p>
-      <div id="perQ"></div>
+      <p>شكراً إنك كمّلت الاستبيان. إجابتك راحت مجهولة ضمن أرقام المجموعة، ونتيجتك دي ليك إنت وحدك — مش لازم تقولها لحد.</p>
+      <button class="btn ghost" id="again">جاوب من الأول</button>
     </div>
-    <button class="btn ghost" id="backHome">رجوع للبداية</button>
     <p class="ft">استبيان توعوي في خدمة الشباب · مش مقياس نفسي مُقنّن</p>
   </section>
 
@@ -156,77 +125,77 @@
   "use strict";
 
   var Q = [
-    { s:"فاضل أسبوع على امتحان أو تسليم مشروع مهم.", k:"الامتحانات والتسليمات",
+    { s:"فاضل أسبوع على امتحان أو تسليم مشروع مهم.",
       o:["بعمل خطة وببدأ، وبحس بتوتر بسيط بيشدني أذاكر.",
          "بتوتر بس بعد شوية بعرف أركز.",
          "بفضل مفكّر إني ممكن أقع، فبأجّل البداية.",
          "بتشلّ تماماً، مش بنام كويس، وساعات بفكر أسيبها خالص."] },
-    { s:"مطلوب منك تتكلم قدام مجموعة في الاجتماع أو المحاضرة.", k:"الكلام قدام الناس",
+    { s:"مطلوب منك تتكلم قدام مجموعة في الاجتماع أو المحاضرة.",
       o:["برتبك ثانيتين وبكمّل عادي.",
          "بتوتر قبلها وببقى مرتاح وأنا بتكلم.",
          "بفضل مفكّر فيها كام يوم قبلها وبتخيّل نفسي بغلط.",
          "باعتذر وبهرب من الموقف رغم إن نفسي فيه."] },
-    { s:"حد سألك: «عامل إيه في مستقبلك بعد التخرّج؟»", k:"القلق من المستقبل",
+    { s:"حد سألك: «عامل إيه في مستقبلك بعد التخرّج؟»",
       o:["عندي تصوّر عام وبتعامل مع المجهول بهدوء.",
          "بضايق شوية وبرجع لطبيعتي.",
          "السؤال بيفتح عليا قلق بيفضل معايا باقي اليوم.",
          "ببعد عن أي كلام عن المستقبل عشان بيضايقني جداً."] },
-    { s:"بعتّ رسالة لحد مهم عندك، وباين إنه قراها ومردّش.", k:"الخوف من الرفض",
+    { s:"بعتّ رسالة لحد مهم عندك، وباين إنه قراها ومردّش.",
       o:["بفترض إنه مشغول وبكمّل يومي.",
          "بستغرب شوية وبنساها.",
          "براجع كلامي وبدوّر على غلطة عملتها.",
          "بتأكد إنه زعلان مني، وبفضل أبص في الموبايل وتركيزي بيضيع."] },
-    { s:"عملت غلطة بسيطة في الشغل أو المذاكرة.", k:"التعامل مع الغلط",
+    { s:"عملت غلطة بسيطة في الشغل أو المذاكرة.",
       o:["بصلّحها وبعتبرها جزء من التعلّم.",
          "بضايق شوية وبعدّيها.",
          "بفضل ألوم نفسي عليها كام يوم.",
          "بعتبرها دليل إني فاشل، وبتأثر على ثقتي في كل حاجة."] },
-    { s:"قبل النوم على طول.", k:"النوم والأفكار",
+    { s:"قبل النوم على طول.",
       o:["بنام في ميعاد معقول ودماغي هادية غالباً.",
          "بفكّر في بكرة كام دقيقة وبنام.",
          "بفضل أراجع مواقف اليوم وسيناريوهات بكرة وبتأخر في النوم.",
          "النوم بقى معركة كل يوم: أفكار مش بتقف أو صحيان كتير."] },
-    { s:"حسّيت بخفقان في قلبك أو صداع متكرر.", k:"الأعراض الجسدية",
+    { s:"حسّيت بخفقان في قلبك أو صداع متكرر.",
       o:["بربطها بالتعب أو قلة النوم.",
          "بلاحظها وبتابع حالتي بهدوء.",
          "بدوّر على الأعراض على النت وبقلق من اللي بلاقيه.",
          "بتأكد إن عندي مرض خطير رغم إن الدكاترة طمّنوني."] },
-    { s:"بتتصفّح السوشيال ميديا وبتشوف إنجازات صحابك.", k:"المقارنة بالناس",
+    { s:"بتتصفّح السوشيال ميديا وبتشوف إنجازات صحابك.",
       o:["بفرحلهم ويومي بيكمّل عادي.",
          "بقارن نفسي لحظة وبعدّي.",
          "بخرج بإحساس إني متأخر عن كل الناس.",
          "بضايق جداً وساعات بمسح التطبيقات وبرجعلها تاني."] },
-    { s:"حد من أهلك اتأخر عن ميعاده ومش بيرد على التليفون.", k:"الخوف على الأهل",
+    { s:"حد من أهلك اتأخر عن ميعاده ومش بيرد على التليفون.",
       o:["بفترض سبب عادي وبستنى.",
          "بقلق شوية وبكلّمه تاني.",
          "خيالي بيبدأ يرسم حوادث وحاجات وحشة.",
          "بدخل في حالة رعب: رعشة وعياط واتصالات ورا بعض."] },
-    { s:"قدامك قرار مهم (تخصص، شغل، ارتباط، سفر).", k:"اتخاذ القرار",
+    { s:"قدامك قرار مهم (تخصص، شغل، ارتباط، سفر).",
       o:["بستشير وبوزن الأمور وبقرّر.",
          "بتردد فترة بس في الآخر بقرّر.",
          "بأجّل القرار خوف أختار الطريق الغلط.",
          "مش بعرف أحسم خالص، وخوفي إن «إرادة ربنا تضيع مني» بيزوّد الحيرة."] },
-    { s:"بعد الصلاة أو الاعتراف، إحساسك ناحية ربنا.", k:"العلاقة مع ربنا",
+    { s:"بعد الصلاة أو الاعتراف، إحساسك ناحية ربنا.",
       o:["بحس براحة وثقة في محبته.",
          "بريح ساعات وبتوتر ساعات.",
          "بفضل خايف إني معترفتش بكل حاجة أو إني مش مقبول.",
          "عايش خايف من غضب ربنا على طول ومش بهدى مهما عملت."] },
-    { s:"داخل مكان فيه ناس كتير مش متعرّف عليهم.", k:"المواقف الاجتماعية",
+    { s:"داخل مكان فيه ناس كتير مش متعرّف عليهم.",
       o:["بتعرّف عليهم بسهولة نسبياً.",
          "برتبك في الأول وبعدين بندمج.",
          "بحس إن كل الناس بتبص عليا وبتحكم عليا.",
          "ببعد عن المواقف دي من الأساس أو بمشي بدري."] },
-    { s:"حد انتقدك قدام الناس.", k:"تقبّل النقد",
+    { s:"حد انتقدك قدام الناس.",
       o:["بسمع وباخد اللي فيه صح.",
          "بضايق بس بستوعبه بعد شوية.",
          "بفضل مفكّر فيه كتير وبحس بالكسوف.",
          "بيهزّ صورتي عن نفسي وبنسحب من المكان أو الخدمة."] },
-    { s:"التزاماتك اتراكمت عليك فوق بعضها.", k:"ضغط الالتزامات",
+    { s:"التزاماتك اتراكمت عليك فوق بعضها.",
       o:["برتّب أولوياتي وبطلب تأجيل اللي ينفع يتأجل.",
          "بتوتر بس بشقّ طريقي وسطهم.",
          "بحس إني بغرق فبهرب في النوم أو الموبايل.",
          "بنهار أو بتعصّب على اللي حواليا، وبحس إني مش قادر."] },
-    { s:"لما تحتاج مساعدة أو حد يسمعك.", k:"طلب المساعدة",
+    { s:"لما تحتاج مساعدة أو حد يسمعك.",
       o:["بطلبها بسهولة من حد بثق فيه.",
          "بتردد بس في الآخر بطلبها.",
          "بفضل ساكت عشان مثقّلش على حد.",
@@ -250,11 +219,10 @@
 
   var AR = ["٠","١","٢","٣","٤","٥","٦","٧","٨","٩"];
   function num(n){ return String(n).split("").map(function(c){ return (c>="0"&&c<="9")?AR[+c]:c; }).join(""); }
-  function dec(x){ return num(x.toFixed(1)).replace(".","٫"); }
   function levelOf(t){ for(var i=0;i<LEVELS.length;i++){ if(t<=LEVELS[i].max) return i; } return 3; }
   function el(id){ return document.getElementById(id); }
   function show(id){
-    ["intro","quiz","personal","results"].forEach(function(s){
+    ["intro","quiz","personal"].forEach(function(s){
       el(s).classList.toggle("on", s===id);
     });
     window.scrollTo(0,0);
@@ -262,7 +230,6 @@
 
   var answers = new Array(Q.length).fill(null);
   var cur = 0;
-  var myId = null, timer = null;
 
   function respondentId(){
     var k = "anx_rid", v = null;
@@ -274,19 +241,18 @@
     }
     return v;
   }
-  myId = respondentId();
+  var myId = respondentId();
 
-  // رسالة خطأ تقول السبب الحقيقي بدل "راجع النت"
   function apiError(status, code){
     if(code === "missing_env")
-      return "السيرفر شغال بس متغيرات Supabase ناقصة. ضيفي SUPABASE_URL و SUPABASE_SERVICE_KEY في Environment Variables على Vercel واعملي Redeploy.";
+      return "متغيرات Supabase ناقصة على Vercel.";
     if(code === "read_failed" || code === "store_failed")
-      return "السيرفر مش عارف يوصل لقاعدة البيانات. اتأكدي من قيم Supabase ومن إن جدول responses موجود.";
+      return "السيرفر مش عارف يوصل لقاعدة البيانات.";
     if(status === 404)
-      return "مفيش /api شغال على اللينك ده. الإحصائيات بتشتغل بعد الرفع على Vercel بفولدر api — الملف لوحده في المتصفح مش هيجمّع نتايج.";
+      return "مفيش /api شغال على اللينك ده.";
     if(status === 0)
-      return "مفيش اتصال بالسيرفر دلوقتي. راجع النت وجرّب تاني.";
-    return "في مشكلة في تحميل النتايج (كود " + status + "). جرّب تاني بعد شوية.";
+      return "مفيش اتصال بالسيرفر دلوقتي.";
+    return "في مشكلة في التسجيل (كود " + status + ").";
   }
 
   function renderQ(){
@@ -354,127 +320,16 @@
       if(st < 200 || st >= 300 || !d || d.error) throw (d && d.error) || "http";
       msg.textContent = "إجابتك اتسجّلت مجهولة ✓";
     }).catch(function(code){
-      msg.textContent = "نتيجتك ظهرتلك هنا، بس متسجّلتش في الإحصائيات. " + apiError(st, typeof code === "string" ? code : null);
+      msg.textContent = "نتيجتك ظهرتلك هنا، بس متسجّلتش. " + apiError(st, typeof code === "string" ? code : null);
     });
-  }
-
-  function bar(label, count, totalN, color){
-    var pct = totalN ? Math.round(count/totalN*100) : 0;
-    var row = document.createElement("div"); row.className = "row";
-    var l = document.createElement("div"); l.className = "lbl"; l.textContent = label;
-    var tr = document.createElement("div"); tr.className = "track";
-    var fi = document.createElement("i"); fi.style.width = pct + "%";
-    if(color) fi.style.background = color;
-    tr.appendChild(fi);
-    var v = document.createElement("div"); v.className = "val";
-    v.textContent = num(count) + " · " + num(pct) + "٪";
-    row.appendChild(l); row.appendChild(tr); row.appendChild(v);
-    return row;
-  }
-
-  function renderStats(agg){
-    var n = agg.n || 0;
-    var top = el("topStats"); top.textContent = "";
-    function stat(label, value){
-      var d = document.createElement("div");
-      var b = document.createElement("b"); b.textContent = value;
-      var s = document.createElement("span"); s.className = "sub"; s.textContent = label;
-      d.appendChild(b); d.appendChild(s); return d;
-    }
-    if(n === 0){
-      top.appendChild(stat("لسه محدش جاوب", "٠"));
-      el("levels").textContent = "";
-      el("conclusion").textContent = "الإحصائيات هتظهر هنا أول ما الشباب يبدأوا يجاوبوا، وبتتحدّث لوحدها.";
-      el("perQ").textContent = "";
-      return;
-    }
-    var lv = agg.levels || [0,0,0,0];
-    var qc = agg.q || Q.map(function(){ return [0,0,0,0]; });
-    var avg = (agg.sum || 0) / n;
-
-    top.appendChild(stat("عدد اللي جاوبوا", num(n)));
-    top.appendChild(stat("متوسط الدرجة من ٤٥", dec(avg)));
-
-    var lb = el("levels"); lb.textContent = "";
-    LEVELS.forEach(function(L, i){
-      lb.appendChild(bar(L.name, lv[i], n, L.color));
-    });
-
-    // الخلاصة
-    var high = (lv[2]||0) + (lv[3]||0);
-    var pctHigh = Math.round(high/n*100);
-    var avgQ = Q.map(function(q, i){
-      var s = 0; for(var j=0;j<4;j++) s += qc[i][j]*j;
-      return { k:q.k, avg:s/n };
-    }).sort(function(a,b){ return b.avg - a.avg; });
-
-    var c = el("conclusion"); c.textContent = "";
-    var p1 = document.createElement("p");
-    if(pctHigh >= 60)      p1.textContent = "معظم اللي جاوبوا (" + num(pctHigh) + "٪) في مستوى قلق متوسط أو عالي. المجموعة كلها تحت ضغط واضح، والموضوع يستاهل جلسة مشورة جماعية ومتابعة فردية لمين محتاج.";
-    else if(pctHigh >= 35) p1.textContent = "حوالي " + num(pctHigh) + "٪ من اللي جاوبوا في مستوى قلق متوسط أو عالي. نسبة مش قليلة ومحتاجة اهتمام ومتابعة، رغم إن معظم المجموعة في الحدود الطبيعية.";
-    else                   p1.textContent = "معظم اللي جاوبوا في مستوى قلق قليل أو خفيف، و" + num(pctHigh) + "٪ بس في المستويات الأعلى. الصورة العامة مطمّنة، مع الانتباه لمين في الطرف العالي.";
-    c.appendChild(p1);
-
-    var p2 = document.createElement("p");
-    p2.textContent = "أكتر المواقف اللي بتقلق المجموعة:";
-    c.appendChild(p2);
-    var ul = document.createElement("ul");
-    avgQ.slice(0,3).forEach(function(x){
-      var li = document.createElement("li");
-      li.textContent = x.k + " — متوسط " + dec(x.avg) + " من ٣";
-      ul.appendChild(li);
-    });
-    c.appendChild(ul);
-    var p3 = document.createElement("p");
-    p3.className = "sub";
-    p3.textContent = "أقل موقف بيقلقهم: " + avgQ[avgQ.length-1].k + ".";
-    c.appendChild(p3);
-
-    // تفصيل كل سؤال
-    var pq = el("perQ"); pq.textContent = "";
-    Q.forEach(function(q, i){
-      var box = document.createElement("div"); box.className = "qstat";
-      var t = document.createElement("div"); t.className = "title";
-      t.textContent = num(i+1) + ". " + q.s;
-      box.appendChild(t);
-      q.o.forEach(function(txt, j){
-        var short = txt.length > 46 ? txt.slice(0,46) + "…" : txt;
-        box.appendChild(bar(short, qc[i][j], n, LEVELS[j].color));
-      });
-      pq.appendChild(box);
-    });
-  }
-
-  function pull(){
-    var st = 0;
-    fetch("/api/stats", { cache: "no-store" })
-      .then(function(r){
-        st = r.status;
-        return r.json().catch(function(){ return null; });
-      })
-      .then(function(d){
-        if(st < 200 || st >= 300 || !d || d.error) throw (d && d.error) || "http";
-        el("liveNote").textContent = "بتتحدّث لوحدها كل ٥ ثواني أول ما حد جديد يجاوب.";
-        renderStats(d);
-      })
-      .catch(function(code){
-        el("liveNote").textContent = apiError(st, typeof code === "string" ? code : null);
-      });
-  }
-
-  function listen(){
-    pull();
-    if(timer) return;
-    timer = setInterval(function(){
-      if(el("results").classList.contains("on")) pull();
-    }, 5000);
   }
 
   el("start").addEventListener("click", function(){ cur=0; renderQ(); show("quiz"); });
   el("back").addEventListener("click", function(){ if(cur>0){ cur--; renderQ(); } });
-  el("toResults").addEventListener("click", function(){ show("results"); listen(); });
-  el("showStats").addEventListener("click", function(){ show("results"); listen(); });
-  el("backHome").addEventListener("click", function(){ show("intro"); });
+  el("again").addEventListener("click", function(){
+    answers = new Array(Q.length).fill(null);
+    cur = 0; renderQ(); show("quiz");
+  });
 })();
 </script>
 </body>
