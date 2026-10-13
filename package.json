@@ -1,0 +1,7 @@
+{
+  "name": "anxiety-survey",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "استبيان القلق للشباب — صفحة ثابتة + دالتين serverless على Vercel"
+}

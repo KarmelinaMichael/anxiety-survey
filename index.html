@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>استبيان القلق للشباب</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f6f5f2; --card:#ffffff; --ink:#1d2430; --muted:#646f7e;
+    --line:#e3e1dc; --accent:#2f6f6b; --accent-soft:#e5efee;
+    --lv1:#4c8c7b; --lv2:#8aa13f; --lv3:#d39434; --lv4:#c4635a;
+    --radius:16px;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  :root:not([data-theme="light"]){
+    @media (prefers-color-scheme: dark){}
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#14171c; --card:#1c2027; --ink:#edeef0; --muted:#9aa4b2;
+      --line:#2b3039; --accent:#5fb5ab; --accent-soft:#223232;
+      --lv1:#5fb5ab; --lv2:#a8bf5c; --lv3:#e0a84f; --lv4:#e0817a;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14171c; --card:#1c2027; --ink:#edeef0; --muted:#9aa4b2;
+    --line:#2b3039; --accent:#5fb5ab; --accent-soft:#223232;
+    --lv1:#5fb5ab; --lv2:#a8bf5c; --lv3:#e0a84f; --lv4:#e0817a;
+  }
+  *,*::before,*::after{box-sizing:inherit}
+  html{scroll-padding-top:env(safe-area-inset-top,0px)}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"Cairo","Segoe UI",Tahoma,"Noto Sans Arabic",sans-serif;
+    font-size:16px; line-height:1.75; -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:640px; margin:0 auto; padding:20px 16px 56px}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:20px; margin-bottom:14px}
+  h1{font-size:1.45rem; line-height:1.5; margin:0 0 6px}
+  h2{font-size:1.12rem; margin:0 0 10px}
+  h3{font-size:.98rem; margin:22px 0 8px; color:var(--muted); font-weight:600}
+  p{margin:0 0 12px}
+  .sub{color:var(--muted); font-size:.92rem}
+  .screen{display:none}
+  .screen.on{display:block}
+  button{font-family:inherit; font-size:1rem; cursor:pointer}
+  .btn{
+    display:block; width:100%; padding:14px 18px; border-radius:12px;
+    border:none; background:var(--accent); color:#fff; font-weight:600;
+    margin-top:8px;
+  }
+  .btn.ghost{background:transparent; color:var(--accent); border:1px solid var(--accent)}
+  .btn:disabled{opacity:.5; cursor:default}
+  .opt{
+    display:block; width:100%; text-align:right; padding:13px 16px; margin-bottom:10px;
+    border:1px solid var(--line); border-radius:12px; background:var(--card); color:var(--ink);
+    line-height:1.65;
+  }
+  .opt:hover{border-color:var(--accent)}
+  .opt.sel{border-color:var(--accent); background:var(--accent-soft)}
+  .bar{height:6px; background:var(--line); border-radius:99px; overflow:hidden; margin-bottom:18px}
+  .bar > i{display:block; height:100%; background:var(--accent); border-radius:99px; transition:width .25s}
+  .meta{display:flex; justify-content:space-between; font-size:.85rem; color:var(--muted); margin-bottom:8px}
+  .qtext{font-size:1.08rem; font-weight:600; margin:0 0 16px; line-height:1.7}
+  .score{font-size:2.6rem; font-weight:700; line-height:1.2}
+  .pill{display:inline-block; padding:4px 14px; border-radius:99px; font-size:.9rem; font-weight:600; color:#fff}
+  .row{display:flex; align-items:center; gap:10px; margin-bottom:8px; font-size:.92rem}
+  .row .lbl{flex:0 0 42%; color:var(--muted)}
+  .row .track{flex:1; height:16px; background:var(--line); border-radius:6px; overflow:hidden}
+  .row .track > i{display:block; height:100%; background:var(--accent); border-radius:6px}
+  .row .val{flex:0 0 auto; font-variant-numeric:tabular-nums; color:var(--muted); min-width:62px; text-align:left}
+  .stat{display:flex; gap:12px; flex-wrap:wrap; margin-bottom:6px}
+  .stat > div{flex:1 1 42%; background:var(--accent-soft); border-radius:12px; padding:12px 14px}
+  .stat b{display:block; font-size:1.5rem; line-height:1.3}
+  .qstat{border-top:1px solid var(--line); padding-top:14px; margin-top:14px}
+  .qstat:first-of-type{border-top:none; padding-top:0; margin-top:0}
+  .qstat .title{font-weight:600; margin-bottom:10px; font-size:.97rem}
+  .note{background:var(--accent-soft); border-radius:12px; padding:14px 16px; font-size:.92rem; margin-top:14px}
+  .warn{border:1px solid var(--lv4); border-radius:12px; padding:14px 16px; font-size:.92rem; margin-top:14px}
+  .msg{font-size:.88rem; color:var(--muted); margin-top:10px}
+  ul{margin:0 0 12px; padding-inline-start:20px}
+  li{margin-bottom:6px}
+  .ft{text-align:center; color:var(--muted); font-size:.82rem; margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- مقدمة -->
+  <section id="intro" class="screen on">
+    <div class="card">
+      <h1>استبيان القلق للشباب</h1>
+      <p class="sub">١٥ موقفًا من حياتك اليومية · من ٣ إلى ٥ دقائق</p>
+      <p>اختر ما يصفك <b>فعلًا</b> في آخر شهر، لا ما تتمنى أن تكونه. لا توجد إجابة صح وأخرى غلط.</p>
+      <div class="note">
+        <b>الاستبيان مجهول تمامًا.</b> لا يُطلب منك اسم ولا رقم، ولا تظهر إجابة أي شخص بمفردها — تظهر الأرقام مجمّعة فقط.
+        <br><br>
+        هذه أداة وعي ذاتي وليست تشخيصًا طبيًا ولا بديلًا عن طبيب أو أخصائي نفسي.
+      </div>
+      <button class="btn" id="start">ابدأ الاستبيان</button>
+      <button class="btn ghost" id="toResults">عرض النتائج المجمَّعة</button>
+    </div>
+  </section>
+
+  <!-- الأسئلة -->
+  <section id="quiz" class="screen">
+    <div class="card">
+      <div class="meta"><span id="counter"></span><span id="pct"></span></div>
+      <div class="bar"><i id="prog" style="width:0%"></i></div>
+      <p class="qtext" id="qtext"></p>
+      <div id="opts"></div>
+      <button class="btn ghost" id="back">رجوع</button>
+    </div>
+  </section>
+
+  <!-- النتيجة الشخصية -->
+  <section id="personal" class="screen">
+    <div class="card">
+      <h2>نتيجتك</h2>
+      <div class="score" id="myScore"></div>
+      <p class="sub">من ٤٥ درجة</p>
+      <p><span class="pill" id="myLevel"></span></p>
+      <p id="myText"></p>
+      <div id="myWarn"></div>
+      <div class="note" id="myTips"></div>
+      <p class="msg" id="saveMsg"></p>
+      <button class="btn" id="showStats">عرض النتائج المجمَّعة</button>
+    </div>
+  </section>
+
+  <!-- الإحصائيات -->
+  <section id="results" class="screen">
+    <div class="card">
+      <h2>النتائج المجمَّعة — مباشر</h2>
+      <p class="sub" id="liveNote">تتحدّث تلقائيًا كلما أجاب شخص جديد.</p>
+      <div class="stat" id="topStats"></div>
+      <h3>توزيع مستويات القلق</h3>
+      <div id="levels"></div>
+      <h3>الاستنتاج</h3>
+      <div id="conclusion"></div>
+    </div>
+    <div class="card">
+      <h2>تفصيل كل موقف</h2>
+      <p class="sub">عدد ونسبة من اختار كل إجابة.</p>
+      <div id="perQ"></div>
+    </div>
+    <button class="btn ghost" id="backHome">رجوع للبداية</button>
+    <p class="ft">استبيان توعوي ضمن خدمة الشباب · ليس مقياسًا نفسيًا مُقَنّنًا</p>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var Q = [
+    { s:"فاضل أسبوع على امتحان أو تسليم مشروع مهم.", k:"الامتحانات والتسليمات",
+      o:["أعمل خطة وأبدأ، وأشعر بتوتر بسيط يدفعني للمذاكرة.",
+         "أتوتر لكني أنجح في التركيز بعد وقت.",
+         "أفكر كثيرًا في احتمال الفشل، فأؤجل البدء.",
+         "أشعر بشلل تام، لا أنام جيدًا، وربما أفكر في الانسحاب."] },
+    { s:"مطلوب منك تتكلم قدام مجموعة في الاجتماع أو المحاضرة.", k:"الكلام أمام الناس",
+      o:["أرتبك ثوانٍ ثم أكمل بشكل طبيعي.",
+         "أتوتر قبلها وأرتاح أثناء الكلام.",
+         "أفكر فيها أيامًا قبلها وأتخيل نفسي أخطئ.",
+         "أعتذر وأتجنّب الموقف تمامًا رغم رغبتي فيه."] },
+    { s:"حد سألك: «عامل إيه في مستقبلك بعد التخرج؟»", k:"القلق من المستقبل",
+      o:["عندي تصوّر عام وأتعامل مع المجهول بهدوء.",
+         "أتضايق قليلًا ثم أرجع لطبيعتي.",
+         "السؤال يفتح عليّ قلقًا يستمر باقي اليوم.",
+         "أتجنّب الحديث عن المستقبل لأنه يسبب لي ضيقًا شديدًا."] },
+    { s:"بعتّ رسالة لشخص مهم عندك، وظهر أنه قرأها ولم يرد.", k:"الخوف من الرفض",
+      o:["أفترض أنه مشغول وأكمل يومي.",
+         "أتساءل قليلًا ثم أنساها.",
+         "أراجع كلامي وأبحث عن خطأ ارتكبته.",
+         "أتأكد أنه زعلان مني، وأظل أتابع الهاتف وأفقد تركيزي."] },
+    { s:"عملت غلطة بسيطة في الشغل أو المذاكرة.", k:"التعامل مع الخطأ",
+      o:["أصلحها وأعتبرها جزءًا من التعلّم.",
+         "أنزعج لبعض الوقت ثم أتجاوزها.",
+         "أظل أعاتب نفسي عليها أيامًا.",
+         "أعتبرها دليلًا أني فاشل، وتؤثر على ثقتي في كل شيء."] },
+    { s:"قبل النوم مباشرة.", k:"النوم والأفكار",
+      o:["أنام في وقت معقول وذهني هادئ غالبًا.",
+         "أفكر في اليوم التالي بضع دقائق ثم أنام.",
+         "أظل أراجع مواقف اليوم وسيناريوهات الغد وأتأخر في النوم.",
+         "النوم صار معركة يومية: أفكار لا تتوقف أو استيقاظ متكرر."] },
+    { s:"حسّيت بخفقان في قلبك أو صداع متكرر.", k:"الأعراض الجسدية",
+      o:["أربطها بالإرهاق أو قلة النوم.",
+         "ألاحظها وأتابع حالتي بهدوء.",
+         "أبحث عن الأعراض على الإنترنت وأقلق من النتائج.",
+         "أتأكد أن عندي مرضًا خطيرًا رغم طمأنة الأطباء."] },
+    { s:"بتتصفّح السوشيال ميديا وبتشوف إنجازات أصحابك.", k:"المقارنة بالآخرين",
+      o:["أفرح لهم ويومي يكمل عاديًا.",
+         "أقارن نفسي لحظة ثم أتجاوز.",
+         "أخرج بإحساس أني متأخر عن الجميع.",
+         "أشعر بضيق شديد وأحيانًا أحذف التطبيقات ثم أعود إليها."] },
+    { s:"حد من أهلك اتأخر عن ميعاده ومش بيرد على التليفون.", k:"الخوف على الأهل",
+      o:["أفترض سببًا عاديًا وأنتظر.",
+         "أقلق قليلًا وأعاود الاتصال.",
+         "يبدأ خيالي يرسم حوادث وأشياء سيئة.",
+         "أدخل في حالة ذعر جسدي: رعشة، بكاء، اتصالات متتالية."] },
+    { s:"قدامك قرار مهم (تخصص، شغل، ارتباط، سفر).", k:"اتخاذ القرار",
+      o:["أستشير وأزن الأمور ثم أقرر.",
+         "أتردد فترة لكني أصل لقرار.",
+         "أؤجل القرار خوفًا من اختيار الطريق الخطأ.",
+         "أعجز عن الحسم تمامًا، ويزيد خوفي من «ضياع إرادة الله» عليّ."] },
+    { s:"بعد الصلاة أو الاعتراف، إحساسك تجاه الله.", k:"العلاقة مع الله",
+      o:["أشعر براحة وثقة في محبته.",
+         "أرتاح أحيانًا وأتوتر أحيانًا.",
+         "أظل خائفًا أني لم أعترف بما يكفي أو أني غير مقبول.",
+         "أعيش خوفًا دائمًا من غضب الله ولا أهدأ مهما فعلت."] },
+    { s:"داخل على مكان فيه ناس كتير مش متعرّف عليهم.", k:"المواقف الاجتماعية",
+      o:["أتعرّف عليهم بسهولة نسبية.",
+         "أرتبك في البداية ثم أندمج.",
+         "أشعر أن الكل يراقبني ويحكم عليّ.",
+         "أتجنّب هذه المواقف من الأساس أو أخرج مبكرًا."] },
+    { s:"حد وجّهلك نقد أمام الآخرين.", k:"تقبّل النقد",
+      o:["أستمع وأستفيد مما فيه صواب.",
+         "أنزعج لكن أستوعبه بعد قليل.",
+         "أظل أفكر فيه طويلًا وأشعر بالخجل.",
+         "يهزّ صورتي عن نفسي ويجعلني أنسحب من المكان أو الخدمة."] },
+    { s:"التزاماتك اتراكمت عليك فوق بعضها.", k:"ضغط الالتزامات",
+      o:["أرتّب أولوياتي وأطلب تأجيل ما يمكن تأجيله.",
+         "أتوتر لكني أشق طريقي بينها.",
+         "أشعر بالغرق فأهرب في النوم أو الهاتف.",
+         "أنهار أو أنفعل على مَن حولي، وأشعر أني لا أحتمل."] },
+    { s:"لما بتحتاج مساعدة أو حد يسمعك.", k:"طلب المساعدة",
+      o:["أطلبها بسهولة ممن أثق فيه.",
+         "أتردد لكني أطلبها في النهاية.",
+         "أفضّل الصمت حتى لا أثقل على أحد.",
+         "أخفي ما بداخلي تمامًا وأظهر أني بخير دائمًا."] }
+  ];
+
+  var LEVELS = [
+    { max:11, name:"قلق منخفض", color:"var(--lv1)",
+      text:"تتعامل مع الضغط بمرونة جيدة، والتوتر عندك في حدوده الطبيعية التي تدفعك للتصرّف لا التي تشلّك.",
+      tips:"حافظ على نومك وحركتك وعلاقاتك، وكن سندًا لمن حولك ممن يمرّون بوقت أصعب." },
+    { max:22, name:"قلق خفيف", color:"var(--lv2)",
+      text:"القلق حاضر ويزعجك أحيانًا، لكنه لا يعطّل دراستك ولا علاقاتك.",
+      tips:"جرّب التنفس البطيء (شهيق ٤ – حبس ٤ – زفير ٦)، وكتابة ما يقلقك بدل تدويره في رأسك، وميعاد ثابت للنوم." },
+    { max:33, name:"قلق متوسط", color:"var(--lv3)",
+      text:"القلق يأخذ مساحة واضحة من تفكيرك ونومك وعلاقاتك، ويبدأ يؤثر على قراراتك.",
+      tips:"ابدأ متابعة منتظمة مع مرشد أو أب اعتراف تثق فيه، ويُفضَّل استشارة أخصائي نفسي. اختر موقفًا واحدًا تتجنّبه وواجهه بخطوات صغيرة." },
+    { max:45, name:"قلق مرتفع", color:"var(--lv4)",
+      text:"القلق يعطّل حياتك اليومية ويستنزف طاقتك. هذا ليس حكمًا على شخصك ولا على إيمانك، بل وصف لمرحلة تحتاج مساندة.",
+      tips:"اطلب مساعدة متخصصة قريبًا، وتحدّث مع شخص واحد تثق فيه هذا الأسبوع. لا تمرّ بهذا وحدك." }
+  ];
+
+  var AR = ["٠","١","٢","٣","٤","٥","٦","٧","٨","٩"];
+  function num(n){ return String(n).split("").map(function(c){ return (c>="0"&&c<="9")?AR[+c]:c; }).join(""); }
+  function levelOf(t){ for(var i=0;i<LEVELS.length;i++){ if(t<=LEVELS[i].max) return i; } return 3; }
+  function el(id){ return document.getElementById(id); }
+  function show(id){
+    ["intro","quiz","personal","results"].forEach(function(s){
+      el(s).classList.toggle("on", s===id);
+    });
+    window.scrollTo(0,0);
+  }
+
+  var answers = new Array(Q.length).fill(null);
+  var cur = 0;
+  var myId = null, timer = null;
+
+  function respondentId(){
+    var k = "anx_rid", v = null;
+    try { v = localStorage.getItem(k); } catch(e){}
+    if(!v){
+      v = (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
+          : "r" + Date.now() + Math.random().toString(36).slice(2);
+      try { localStorage.setItem(k, v); } catch(e){}
+    }
+    return v;
+  }
+  myId = respondentId();
+
+  function renderQ(){
+    var q = Q[cur];
+    el("counter").textContent = "سؤال " + num(cur+1) + " من " + num(Q.length);
+    var p = Math.round((cur)/Q.length*100);
+    el("pct").textContent = num(p) + "٪";
+    el("prog").style.width = p + "%";
+    el("qtext").textContent = q.s;
+    var box = el("opts");
+    box.textContent = "";
+    q.o.forEach(function(txt, i){
+      var b = document.createElement("button");
+      b.className = "opt" + (answers[cur]===i ? " sel" : "");
+      b.type = "button";
+      b.textContent = txt;
+      b.addEventListener("click", function(){
+        answers[cur] = i;
+        if(cur < Q.length-1){ cur++; renderQ(); }
+        else { finish(); }
+      });
+      box.appendChild(b);
+    });
+    el("back").style.display = cur===0 ? "none" : "block";
+  }
+
+  function total(){ return answers.reduce(function(a,b){ return a + (b||0); }, 0); }
+
+  function finish(){
+    var t = total(), li = levelOf(t), L = LEVELS[li];
+    el("myScore").textContent = num(t);
+    el("myLevel").textContent = L.name;
+    el("myLevel").style.background = L.color;
+    el("myText").textContent = L.text;
+    el("myTips").textContent = L.tips;
+    var w = el("myWarn");
+    w.textContent = "";
+    if(li >= 2){
+      var d = document.createElement("div");
+      d.className = "warn";
+      d.textContent = "لو حسّيت أن الحياة بلا معنى، أو جت على بالك أفكار بإيذاء نفسك، اتكلم اليوم مع شخص تثق فيه واطلب مساعدة طبية. ده مش ضعف ولا فضيحة.";
+      w.appendChild(d);
+    }
+    show("personal");
+    save(t, li);
+  }
+
+  function save(t, li){
+    var msg = el("saveMsg");
+    msg.textContent = "جارٍ تسجيل إجابتك…";
+    fetch("/api/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        respondent: myId,
+        answers: answers.map(function(x){ return x||0; }),
+        total: t,
+        level: li
+      })
+    }).then(function(r){
+      if(!r.ok) throw new Error("bad");
+      msg.textContent = "اتسجّلت إجابتك مجهولة ✓";
+    }).catch(function(){
+      msg.textContent = "إجابتك ظهرت لك هنا، لكن تسجيلها في الإحصائيات اتأخر. راجع اتصالك وجرّب تاني.";
+    });
+  }
+
+  function bar(label, count, totalN, color){
+    var pct = totalN ? Math.round(count/totalN*100) : 0;
+    var row = document.createElement("div"); row.className = "row";
+    var l = document.createElement("div"); l.className = "lbl"; l.textContent = label;
+    var tr = document.createElement("div"); tr.className = "track";
+    var fi = document.createElement("i"); fi.style.width = pct + "%";
+    if(color) fi.style.background = color;
+    tr.appendChild(fi);
+    var v = document.createElement("div"); v.className = "val";
+    v.textContent = num(count) + " · " + num(pct) + "٪";
+    row.appendChild(l); row.appendChild(tr); row.appendChild(v);
+    return row;
+  }
+
+  function renderStats(agg){
+    var n = agg.n || 0;
+    var top = el("topStats"); top.textContent = "";
+    function stat(label, value){
+      var d = document.createElement("div");
+      var b = document.createElement("b"); b.textContent = value;
+      var s = document.createElement("span"); s.className = "sub"; s.textContent = label;
+      d.appendChild(b); d.appendChild(s); return d;
+    }
+    if(n === 0){
+      top.appendChild(stat("لم يجب أحد بعد", "٠"));
+      el("levels").textContent = "";
+      el("conclusion").textContent = "الإحصائيات هتظهر هنا أول ما يبدأ الشباب يجاوبوا، وبتتحدّث لوحدها.";
+      el("perQ").textContent = "";
+      return;
+    }
+    var lv = agg.levels || [0,0,0,0];
+    var qc = agg.q || Q.map(function(){ return [0,0,0,0]; });
+    var avg = (agg.sum || 0) / n;
+    top.appendChild(stat("عدد المشاركين", num(n)));
+    top.appendChild(stat("متوسط الدرجة من ٤٥", num(avg.toFixed(1).replace(".","٫"))));
+
+    var lb = el("levels"); lb.textContent = "";
+    LEVELS.forEach(function(L, i){
+      lb.appendChild(bar(L.name, lv[i], n, L.color));
+    });
+
+    // الاستنتاج
+    var high = lv[2] + lv[3];
+    var pctHigh = Math.round(high/n*100);
+    var avgQ = Q.map(function(q, i){
+      var s = 0; for(var j=0;j<4;j++) s += qc[i][j]*j;
+      return { k:q.k, avg:s/n };
+    }).sort(function(a,b){ return b.avg - a.avg; });
+
+    var c = el("conclusion"); c.textContent = "";
+    var p1 = document.createElement("p");
+    if(pctHigh >= 60)      p1.textContent = "أغلب من شاركوا (" + num(pctHigh) + "٪) في مستوى قلق متوسط أو مرتفع. المجموعة ككل تحت ضغط واضح، والموضوع يستحق جلسة مشورة جماعية ومتابعة فردية لمن يحتاج.";
+    else if(pctHigh >= 35) p1.textContent = "حوالي " + num(pctHigh) + "٪ من المشاركين في مستوى قلق متوسط أو مرتفع. نسبة معتبرة تحتاج اهتمامًا ومتابعة، مع أن أغلب المجموعة في الحدود الطبيعية.";
+    else                   p1.textContent = "أغلب من شاركوا في مستوى قلق منخفض أو خفيف، و" + num(pctHigh) + "٪ فقط في المستويات الأعلى. الصورة العامة مطمئنة، مع الانتباه لمن هم في الطرف المرتفع.";
+    c.appendChild(p1);
+
+    var p2 = document.createElement("p");
+    p2.textContent = "أكثر المواقف إثارة للقلق في المجموعة:";
+    c.appendChild(p2);
+    var ul = document.createElement("ul");
+    avgQ.slice(0,3).forEach(function(x){
+      var li = document.createElement("li");
+      li.textContent = x.k + " — متوسط " + num(x.avg.toFixed(1).replace(".","٫")) + " من ٣";
+      ul.appendChild(li);
+    });
+    c.appendChild(ul);
+    var p3 = document.createElement("p");
+    p3.className = "sub";
+    p3.textContent = "أقل المواقف إثارة للقلق: " + avgQ[avgQ.length-1].k + ".";
+    c.appendChild(p3);
+
+    // تفصيل كل سؤال
+    var pq = el("perQ"); pq.textContent = "";
+    Q.forEach(function(q, i){
+      var box = document.createElement("div"); box.className = "qstat";
+      var t = document.createElement("div"); t.className = "title";
+      t.textContent = num(i+1) + ". " + q.s;
+      box.appendChild(t);
+      q.o.forEach(function(txt, j){
+        var short = txt.length > 46 ? txt.slice(0,46) + "…" : txt;
+        box.appendChild(bar(short, qc[i][j], n, LEVELS[j].color));
+      });
+      pq.appendChild(box);
+    });
+  }
+
+  function pull(){
+    fetch("/api/stats", { cache: "no-store" })
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        el("liveNote").textContent = "تتحدّث تلقائيًا كل ٥ ثوانٍ كلما أجاب شخص جديد.";
+        renderStats(d);
+      })
+      .catch(function(){
+        el("liveNote").textContent = "تعذّر تحميل النتائج الآن. راجع اتصالك بالإنترنت.";
+      });
+  }
+
+  function listen(){
+    pull();
+    if(timer) return;
+    timer = setInterval(function(){
+      if(el("results").classList.contains("on")) pull();
+    }, 5000);
+  }
+
+  el("start").addEventListener("click", function(){ cur=0; renderQ(); show("quiz"); });
+  el("back").addEventListener("click", function(){ if(cur>0){ cur--; renderQ(); } });
+  el("toResults").addEventListener("click", function(){ show("results"); listen(); });
+  el("showStats").addEventListener("click", function(){ show("results"); listen(); });
+  el("backHome").addEventListener("click", function(){ show("intro"); });
+
+})();
+</script>
+</body>
+</html>
